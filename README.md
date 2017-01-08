@@ -4,6 +4,9 @@ Challenge page : [Project page](https://challengedata.ens.fr/en/challenge/19/age
 
 * Dependencies
 
+Python 3.5
+Numpy
+Matplotlib
 Scikit-learn
 Pandas
 
