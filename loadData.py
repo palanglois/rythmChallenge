@@ -21,8 +21,12 @@ for i in range(30):
   pls2.fit(data2,label2)
   label_pred = pls2.predict(data2).reshape((label2.shape[0],))
   scoreStore.append(score_function(label2,label_pred))
-  print i
+  print(i)
 
 plt.plot(scoreStore)
 plt.show()
+
+label_pred = pls2.predict(data2).reshape((label2.shape[0],))
+
+print(score_function(label2, label_pred))
 
