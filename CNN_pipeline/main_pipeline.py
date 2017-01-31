@@ -6,9 +6,9 @@ highFreq = 100 #Hz
 sampling_freq = 250 #Hz
 butter_order = 2 #Order of the butterworth filter
 dimOutput = 90 #We predict ages from 0 to 89 years old
-sizeHidden = 120 #Size of the hidden layers
+sizeHidden = 10 #Size of the hidden layers
 batchSize = 4000 #Size of the batch for training
-learningRate = 0.0001 #Setting learning rate
+learningRate = 0.00001 #Setting learning rate
 
 #Loading the data
 print('\nLoading the data...')
@@ -19,20 +19,18 @@ print('Data loaded !\n')
 print('Filtering the data...')
 from preprocessData import *
 xTrain_fil = butter_bandpass_filter(xTrain, lowFreq, highFreq, sampling_freq, order=butter_order)
-yTrain_fil = butter_bandpass_filter(yTrain, lowFreq, highFreq, sampling_freq, order=butter_order)
 xVal_fil = butter_bandpass_filter(xVal, lowFreq, highFreq, sampling_freq, order=butter_order)
-yVal_fil = butter_bandpass_filter(yVal, lowFreq, highFreq, sampling_freq, order=butter_order)
 print('Data filtered !\n')
 
 #Augmenting the data
 print('Augmenting the data...')
-xTrainFinal, yTrainFinal = augmentData(xTrain_fil,yTrain_fil,1250)
-xValFinal, yValFinal = augmentData(xVal_fil,yVal_fil,1250)
+xTrainFinal, yTrainFinal = augmentData(xTrain_fil,yTrain,1250)
+xValFinal, yValFinal = augmentData(xVal_fil,yVal,1250)
 print('Data augmented !\n')
 print('The data is now ready for training...\n')
 
 #Creating the CNN graph
 from CNN import *
 cnn = rythmCNN(xTrainFinal.shape[1],dimOutput,sizeHidden,batchSize,learningRate)
-cnn.train(10000,xTrainFinal,yTrainFinal, xValFinal, yValFinal)
+cnn.train(1000,xTrainFinal,yTrainFinal, xValFinal, yValFinal)
 

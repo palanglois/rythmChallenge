@@ -65,6 +65,7 @@ class rythmCNN:
       batchInd = random.sample(range(npData.shape[0]),self.batchSize)
       yBatch = yLabel[batchInd,:]
       xBatch = npData[batchInd,:]
+      _, loss_val =  sess.run([self.train_step,self.loss], feed_dict={self.x: xBatch, self.y_: yBatch, self.keep_prob:0.5})
       if i % 10 == 0:
         train_accuracy = self.accuracy.eval(feed_dict={ self.x:xBatch, self.y_:yBatch, self.keep_prob:1.0})
         val_accuracy = self.accuracy.eval(feed_dict={ self.x:xVal, self.y_:yVal, self.keep_prob:1.0})
@@ -74,6 +75,6 @@ class rythmCNN:
         #print y.eval(feed_dict={ x:xBatch, y_:yBatch })
         #print "\ny_"
         #print y_.eval(feed_dict={ x:xBatch, y_:yBatch })
-      _, loss_val =  sess.run([self.train_step,self.loss], feed_dict={self.x: xBatch, self.y_: yBatch, self.keep_prob:0.5})
+        print("step %d, loss %g"%(i, loss_val))
       self.iterations.append(loss_val)
 
