@@ -6,9 +6,9 @@ highFreq = 100 #Hz
 sampling_freq = 250 #Hz
 butter_order = 2 #Order of the butterworth filter
 dimOutput = 90 #We predict ages from 0 to 89 years old
-sizeHidden = 10 #Size of the hidden layers
-batchSize = 400 #Size of the batch for training
-learningRate = 0.05 #Setting learning rate
+sizeHidden = 120 #Size of the hidden layers
+batchSize = 4000 #Size of the batch for training
+learningRate = 0.0001 #Setting learning rate
 
 #Loading the data
 print('\nLoading the data...')

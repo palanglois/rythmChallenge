@@ -21,13 +21,22 @@ class rythmCNN:
     #Allocating sizes for the data and the labels
     self.x = tf.placeholder(tf.float32, shape=[None, dimData])
     self.y_ = tf.placeholder(tf.float32, shape=[None, dimOutput])
-    
-    #Defining weights
-    self.W = tf.Variable(tf.zeros([self.dimData,self.dimOutput]))
-    self.b = tf.Variable(tf.zeros([self.dimOutput]))
 
-    #Defining the model (1 input layer)
-    self.y = tf.nn.softmax(tf.matmul(self.x,self.W) + self.b)
+    #Defining the model 
+
+    #1st layer : fully connected
+    self.W_fc1 = self.weight_variable([self.dimData,self.sizeHidden])
+    self.b_fc1 = self.bias_variable([self.sizeHidden])
+    self.h_fc1 = tf.nn.relu(tf.matmul(self.x,self.W_fc1)+self.b_fc1)
+
+    #Performing dropout
+    self.keep_prob = tf.placeholder(tf.float32) #Proba to keep a neuron's output
+    self.h_fc1_drop = tf.nn.dropout(self.h_fc1, self.keep_prob)
+
+    #2nd layer : fully connected with softmax
+    self.W_fc2 = self.weight_variable([self.sizeHidden,self.dimOutput])
+    self.b_fc2 = self.bias_variable([self.dimOutput])
+    self.y = tf.nn.softmax(tf.matmul(self.h_fc1_drop,self.W_fc2)+self.b_fc2)
 
     #Defining the loss and accuracy
     self.divider = 1 if tf.argmax(self.y_,1) == 0 else tf.argmax(self.y_,1)
@@ -57,14 +66,14 @@ class rythmCNN:
       yBatch = yLabel[batchInd,:]
       xBatch = npData[batchInd,:]
       if i % 10 == 0:
-        train_accuracy = self.accuracy.eval(feed_dict={ self.x:xBatch, self.y_:yBatch })
-        val_accuracy = self.accuracy.eval(feed_dict={ self.x:xVal, self.y_:yVal})
+        train_accuracy = self.accuracy.eval(feed_dict={ self.x:xBatch, self.y_:yBatch, self.keep_prob:1.0})
+        val_accuracy = self.accuracy.eval(feed_dict={ self.x:xVal, self.y_:yVal, self.keep_prob:1.0})
         print("step %d, training accuracy %g"%(i, train_accuracy))
         print("step %d, evaluation accuracy %g"%(i, val_accuracy))
-      #print "\ny"
-      #print y.eval(feed_dict={ x:xBatch, y_:yBatch })
-      #print "\ny_"
-      #print y_.eval(feed_dict={ x:xBatch, y_:yBatch })
-      _, loss_val =  sess.run([self.train_step,self.loss], feed_dict={self.x: xBatch, self.y_: yBatch})
+        #print "\ny"
+        #print y.eval(feed_dict={ x:xBatch, y_:yBatch })
+        #print "\ny_"
+        #print y_.eval(feed_dict={ x:xBatch, y_:yBatch })
+      _, loss_val =  sess.run([self.train_step,self.loss], feed_dict={self.x: xBatch, self.y_: yBatch, self.keep_prob:0.5})
       self.iterations.append(loss_val)
 
