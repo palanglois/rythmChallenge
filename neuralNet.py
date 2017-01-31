@@ -28,7 +28,7 @@ dimData= len(npData[0])
 dimOutput = 90
 
 #Batch size
-batchSize = 20
+batchSize = 40
 
 #Setting up the labels to the right format
 yLabel = []
@@ -65,7 +65,7 @@ loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y, labels=y
 
 
 #Defining the learning rate
-learningRate = 1e-2
+learningRate = 1e-4
 
 #Creating a training step
 train_step = tf.train.AdamOptimizer(learningRate).minimize(loss)
