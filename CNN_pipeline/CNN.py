@@ -33,10 +33,18 @@ class rythmCNN:
     self.keep_prob = tf.placeholder(tf.float32) #Proba to keep a neuron's output
     self.h_fc1_drop = tf.nn.dropout(self.h_fc1, self.keep_prob)
 
-    #2nd layer : fully connected with softmax
-    self.W_fc2 = self.weight_variable([self.sizeHidden,self.dimOutput])
-    self.b_fc2 = self.bias_variable([self.dimOutput])
-    self.y = tf.nn.softmax(tf.matmul(self.h_fc1_drop,self.W_fc2)+self.b_fc2)
+    #2nd layer : fully connected
+    self.W_fc2 = self.weight_variable([self.sizeHidden,self.sizeHidden])
+    self.b_fc2 = self.bias_variable([self.sizeHidden])
+    self.h_fc2 = tf.nn.relu(tf.matmul(self.h_fc1_drop,self.W_fc2)+self.b_fc2)
+
+    #Performing dropout
+    self.h_fc2_drop = tf.nn.dropout(self.h_fc2, self.keep_prob)
+
+    #3rd layer : fully connected with softmax
+    self.W_fc3 = self.weight_variable([self.sizeHidden,self.dimOutput])
+    self.b_fc3 = self.bias_variable([self.dimOutput])
+    self.y = tf.matmul(self.h_fc2_drop,self.W_fc3)+self.b_fc3
 
     #Defining the loss and accuracy
     self.divider = 1 if tf.argmax(self.y_,1) == 0 else tf.argmax(self.y_,1)

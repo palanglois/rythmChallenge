@@ -6,7 +6,7 @@ highFreq = 100 #Hz
 sampling_freq = 250 #Hz
 butter_order = 2 #Order of the butterworth filter
 dimOutput = 90 #We predict ages from 0 to 89 years old
-sizeHidden = 10 #Size of the hidden layers
+sizeHidden = 20 #Size of the hidden layers
 batchSize = 4000 #Size of the batch for training
 learningRate = 0.00001 #Setting learning rate
 
@@ -32,5 +32,5 @@ print('The data is now ready for training...\n')
 #Creating the CNN graph
 from CNN import *
 cnn = rythmCNN(xTrainFinal.shape[1],dimOutput,sizeHidden,batchSize,learningRate)
-cnn.train(1000,xTrainFinal,yTrainFinal, xValFinal, yValFinal)
+cnn.train(15000,xTrainFinal,yTrainFinal, xValFinal, yValFinal)
 
