@@ -12,6 +12,7 @@ from public_MAPE import score_function
 
 
 if __name__ == "__main__":
+	print "Loading data and results"
 	data_dir = "data"
 	res_dir = "results"
 	ages = pd.read_csv(path.join(data_dir, "train_output.csv"), sep=';', index_col=0)
@@ -24,6 +25,7 @@ if __name__ == "__main__":
 	X_test = pd.concat([test_EEG, test_hypno], axis=1).values
 	y_train = ages.values.ravel()
 
+	print "Fitting the Linear estimator"
 	reg = LinearRegression()
 	reg.fit(X_train, y_train)
 	y_test = reg.predict(X_test)

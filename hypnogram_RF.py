@@ -94,21 +94,24 @@ def get_features_df(df):
 
 
 if __name__ == "__main__":
+	print "Loading data"
 	data_dir = "data"
 	train = pd.read_csv(path.join(data_dir, "train_input.csv"), sep=';', index_col=0)
 	test = pd.read_csv(path.join(data_dir, "test_input.csv"), sep=';', index_col=0)
 	ages = pd.read_csv(path.join(data_dir, "train_output.csv"), sep=';', index_col=0)
 
+	print "Extracting features from the data"
 	features_train = get_features_df(train)
 	features_test = get_features_df(test)
 
+	print "Fitting the Random Forest estimator"
 	scorer = make_scorer(score_function, greater_is_better=False)
 
 	tuned_parameters = [{'n_estimators': [5, 10, 15, 20, 50, 100, 200, 500],
                      'min_samples_leaf': [1, 5, 10, 50, 100, 200, 500],
                     'oob_score': [True, False]}]
-
-    X_train, y_train = features_train.values.astype(np.float64), ages.values.ravel()
+	
+	X_train, y_train = features_train.values.astype(np.float64), ages.values.ravel()
 	X_test = features_test.values.astype(np.float64)
 	feature_names = list(features_train.columns)
 
@@ -126,10 +129,11 @@ if __name__ == "__main__":
 	y_train_pred = reg.best_estimator_.oob_prediction_
 	y_test_pred = reg.predict(X_test)
 
+	print "Saving results"
 	res_dir = "results"
 
 	ages_train_pred = pd.DataFrame(np.round(y_train_pred), columns=["TARGET"], index=train.index)
 	ages_train_pred.to_csv(path.join(res_dir, "train_output_hypnogram.csv"), sep=';')
 
 	ages_test_pred = pd.DataFrame(np.round(y_test_pred), columns=["TARGET"], index=test.index)
-	ages_test_pred.to_csv(path.join(res_dir, "test_output_hypnogram.csv", sep=';')
+	ages_test_pred.to_csv(path.join(res_dir, "test_output_hypnogram.csv"), sep=';')
