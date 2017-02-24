@@ -20,6 +20,7 @@ if __name__ == "__main__":
 	train_EEG = pd.read_csv(path.join(res_dir, "train_output_EEG.csv"), sep=";", index_col=0)
 	test_hypno = pd.read_csv(path.join(res_dir, "test_output_hypnogram.csv"), sep=";", index_col=0)
 	test_EEG = pd.read_csv(path.join(res_dir, "test_output_EEG.csv"), sep=";", index_col=0)
+	test_EEG.index = test_hypno.index
 
 	X_train = pd.concat([train_EEG, train_hypno], axis=1).values
 	X_test = pd.concat([test_EEG, test_hypno], axis=1).values
@@ -29,5 +30,5 @@ if __name__ == "__main__":
 	reg = LinearRegression()
 	reg.fit(X_train, y_train)
 	y_test = reg.predict(X_test)
-	ages_pred = pd.DataFrame(np.round(y_test_pred), columns=["TARGET"], index=test.index)
-	ages_pred.to_csv(path.join(res_dir, "test_output.csv", sep=';')
+	ages_pred = pd.DataFrame(np.round(y_test), columns=["TARGET"], index=test_hypno.index)
+	ages_pred.to_csv(path.join(res_dir, "test_output.csv"), sep=';')
