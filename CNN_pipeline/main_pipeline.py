@@ -42,6 +42,9 @@ print('Loading tensorflow...\n')
 from CNN import *
 print('\n\nLoading the neural network...')
 cnn = rythmCNN(xTrainFinal.shape[1],dimOutput,sizeHidden,batchSize,learningRate,nonLinearity,sizeSeg)
-print('Training !')
-cnn.train(100000,xTrainFinal,yTrainFinal, xValFinal, yValFinal)
 
+#print('Training !')
+#cnn.train(100000,xTrainFinal,yTrainFinal, xValFinal, yValFinal)
+print('Reloading weights')
+cnn.reloadModel('model100k.ckpt')
+print('If no error, model is ready')

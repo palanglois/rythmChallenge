@@ -107,6 +107,10 @@ class rythmCNN:
     #Saving the current result
     os.system('scp -P 50683 ' + self.localValPath + '*' + ' pi@86.252.86.222:' + self.remotepath)
 
+  def reloadModel(self,ckptName):
+    saver = tf.train.Saver()
+    saver.restore(sess,ckptName)
+
   def train(self,nIter,npData,yLabel,xVal,yVal):
     
     #Doing nIter iterations
