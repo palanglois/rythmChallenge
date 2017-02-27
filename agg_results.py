@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import make_scorer
 from public_MAPE import score_function
 
+# We take the results from the ANN and the Random Forest and use a Linear Regression
 
 if __name__ == "__main__":
 	print "Loading data and results"
@@ -27,8 +28,13 @@ if __name__ == "__main__":
 	y_train = ages.values.ravel()
 
 	print "Fitting the Linear estimator"
-	reg = LinearRegression()
+	reg = LinearRegression(fit_intercept=True, normalize=True)
 	reg.fit(X_train, y_train)
+	y_train_pred = reg.predict(X_train)
+	print "Score: "
+	print "With ANN:           ", score_function(y_train, X_train[:,0])
+	print "With Random Forest: ", score_function(y_train, X_train[:,1])
+	print "Wiht both:          ", score_function(y_train, y_train_pred)
 	y_test = reg.predict(X_test)
 	ages_pred = pd.DataFrame(np.round(y_test), columns=["TARGET"], index=test_hypno.index)
 	ages_pred.to_csv(path.join(res_dir, "test_output.csv"), sep=';')
