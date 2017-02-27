@@ -99,14 +99,6 @@ class rythmCNN:
     initial = tf.constant(1., shape=shape)
     return tf.Variable(initial)
 
-  def sendFullSummary(self):
-    #Saving the full result
-    os.system('scp -P 50683 -r '+ self.localpath + ' pi@86.252.86.222:' + self.remotepath)
-
-  def sendPartialSummary(self):
-    #Saving the current result
-    os.system('scp -P 50683 ' + self.localValPath + '*' + ' pi@86.252.86.222:' + self.remotepath)
-
   def reloadModel(self,ckptName):
     saver = tf.train.Saver()
     saver.restore(sess,ckptName)
@@ -124,9 +116,6 @@ class rythmCNN:
       self.train_writer.add_summary(summary_train, i)
       self.val_writer.add_summary(summary_val, i)
 
-      if i % 50000 == 0:
-        self.sendPartialSummary()
-
       if i % 10 == 0:
         train_accuracy = self.accuracy.eval(feed_dict={ self.x:xBatch, self.y_:yBatch, self.keep_prob:1.0})
         val_accuracy = self.accuracy.eval(feed_dict={ self.x:xVal, self.y_:yVal, self.keep_prob:1.0})
@@ -138,5 +127,4 @@ class rythmCNN:
         #print y_.eval(feed_dict={ x:xBatch, y_:yBatch })
         print("step %d, loss %g"%(i, loss_val))
       self.iterations.append(loss_val)
-    self.sendFullSummary()
 
