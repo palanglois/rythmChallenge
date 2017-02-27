@@ -63,7 +63,6 @@ class rythmCNN:
     #Defining the loss and accuracy
     self.divider = 1 if tf.argmax(self.y_,1) == 0 else tf.argmax(self.y_,1)
     self.accuracy = tf.reduce_mean(tf.abs(tf.divide(tf.subtract(tf.argmax(self.y,1),tf.argmax(self.y_,1)),self.divider)))
-    #self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.y, labels=self.y_) + 0.001*tf.nn.l2_loss(tf.nn.softmax(self.y)-self.y_))
     self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.y, labels=self.y_))
 
     #Creating a training step
@@ -121,10 +120,6 @@ class rythmCNN:
         val_accuracy = self.accuracy.eval(feed_dict={ self.x:xVal, self.y_:yVal, self.keep_prob:1.0})
         print("step %d, training accuracy %g"%(i, train_accuracy))
         print("step %d, evaluation accuracy %g"%(i, val_accuracy))
-        #print "\ny"
-        #print y.eval(feed_dict={ x:xBatch, y_:yBatch })
-        #print "\ny_"
-        #print y_.eval(feed_dict={ x:xBatch, y_:yBatch })
         print("step %d, loss %g"%(i, loss_val))
       self.iterations.append(loss_val)
 
