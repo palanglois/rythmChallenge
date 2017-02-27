@@ -8,11 +8,12 @@ Our presentation for this project is [here](https://github.com/palanglois/rythmC
 
 Our report is [here](https://github.com/palanglois/rythmChallenge/blob/master/Report\_age\_predictions\_Langlois\_Kadaoui.pdf).
 
-* Dependencies
+# Dependencies
 
-Python 3.5
-Numpy
-Matplotlib
-Scikit-learn
-Pandas
+* Python 3.5
+* Numpy
+* Matplotlib
+* Scikit-learn
+* Pandas
+* TensorFlow
 
