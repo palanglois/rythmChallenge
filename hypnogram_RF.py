@@ -10,6 +10,8 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import make_scorer
 from public_MAPE import score_function
 
+# Extract new features from hypnograms and apply a Random Forest to it
+
 
 def get_hypno(row):
     hypno = pd.Series(literal_eval(row)).astype(np.int8)
@@ -17,12 +19,14 @@ def get_hypno(row):
 
 
 def get_duration_sleep(row):
+    # Total sleep time: we don't take into account when the subject is awake (0)
     newRow = row[row.notnull()]
     sleep = (newRow != 0).sum()
     return sleep*30.0
 
 
 def get_sleep_latency(row):
+    # When the subject falls asleep
     cnt = 0.0
     for i, val in enumerate(row):
         if val == 0:
@@ -32,6 +36,7 @@ def get_sleep_latency(row):
 
 
 def get_sleep_efficiency(row):
+    # Percentage of sleep time in comparison with time in bed
     newRow = row[row.notnull()]
     sleep_time = (newRow != 0).sum()
     time_bed = newRow.count()
@@ -39,6 +44,7 @@ def get_sleep_efficiency(row):
 
 
 def get_perc_sleep_stage(row, id_stage):
+    # Percentage of sleep stage "id_stage"
     newRow = row[row.notnull()]
     sleep_stage = (newRow == id_stage).sum()
     sleep_time = (newRow != 0).sum()
@@ -46,11 +52,13 @@ def get_perc_sleep_stage(row, id_stage):
 
 
 def get_duration_sleep_stage(row, id_stage):
+    # Duration of a sleep stage
     sleep_stage = (row == id_stage).sum()
     return sleep_stage*30.0
 
 
 def get_periods_sleep_stage(row, id_stage):
+    # Extract the mean and the max of each period with a succession of the same sleep stage
     periods = [] # periods is the duration of the sleep stage at each time
     cnt = 1 * (row[0] == id_stage) # cnt is incremented each time to get the period
     for i in range(1, len(row)):
@@ -70,12 +78,13 @@ def get_periods_sleep_stage(row, id_stage):
 
 
 def get_features_df(df):
+    # Applies the whole preprocessing to the dataframe df
     sleep_stages = np.arange(5)
     hypno_list = df["HYPNOGRAM"]
     hypno = hypno_list.apply(get_hypno)
-    # we replace the nan values (because the hypnograms don't have the same lengths) with -2 
+    # we replace the nan values (because the hypnograms don't have the same lengths) with -2
     # so they are not confused with -1 (missing values)
-    hypno.fillna(-2, inplace=True) 
+    hypno.fillna(-2, inplace=True)
     # then we fill the missing values with the previous valid value
     hypno.replace(-1, np.nan, inplace=True)
     hypno.fillna(method="ffill", axis=1, inplace=True)
@@ -107,17 +116,16 @@ if __name__ == "__main__":
 	print "Fitting the Random Forest estimator"
 	scorer = make_scorer(score_function, greater_is_better=False)
 
-	tuned_parameters = [{'n_estimators': [5, 10, 15, 20, 50, 100, 200, 500],
-                     'min_samples_leaf': [1, 5, 10, 50, 100, 200, 500],
-                    'oob_score': [True, False]}]
-	
+	tuned_parameters = [{'n_estimators': [10, 20, 50, 100, 200, 500],
+                     'min_samples_leaf': [1, 5, 10, 50, 100, 200, 500]}]
+
 	X_train, y_train = features_train.values.astype(np.float64), ages.values.ravel()
 	X_test = features_test.values.astype(np.float64)
 	feature_names = list(features_train.columns)
 
-	rf = RandomForestRegressor(n_jobs=-1, random_state=42)
+	rf = RandomForestRegressor(oob_score=True, n_jobs=-1, random_state=42)
 	reg = GridSearchCV(rf, tuned_parameters, cv=5, n_jobs=-1, verbose=1,
-                       scoring=scorer)
+                       scoring=scorer) # Taking the oob_score is important to avoid overfitting
 
 	reg.fit(X_train, y_train)
 
@@ -126,7 +134,7 @@ if __name__ == "__main__":
 	print "best score"
 	print -reg.best_score_
 
-	y_train_pred = reg.best_estimator_.oob_prediction_
+	y_train_pred = reg.best_estimator_.oob_prediction_ # We shouldn't take reg.predict(X_train)!
 	y_test_pred = reg.predict(X_test)
 
 	print "Saving results"
